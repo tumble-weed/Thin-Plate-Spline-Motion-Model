@@ -14,7 +14,7 @@ from skimage.transform import resize
 config_path = 'config/vox-256.yaml'
 checkpoint_path = 'checkpoints/vox.pth.tar'
 device = 'cuda'
-DEBUG_PROD = False
+DEBUG_PROD = True
 ######################################################
 TODO = False
 def decodeBase64Image(imageStr: str, name: str) -> Image:
