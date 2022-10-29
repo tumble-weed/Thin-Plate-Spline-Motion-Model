@@ -1,6 +1,6 @@
 import skimage.io
 import base64
-from Image import PIL
+from PIL import Image
 from io import BytesIO
 import app
 def encodeBase64Image(image: PIL.Image) -> str:
