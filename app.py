@@ -30,10 +30,11 @@ def inference(all_inputs:dict) -> dict:
         #TODO: or storage to google bucket and send back the link?
         return {'results':TODO}
     elif True and 'DEBUG: send back the original image':
-        buffered = BytesIO()
-        image.save(buffered, format="JPEG")
-        img_str = base64.b64encode(buffered.getvalue())
-        # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string
-        image_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
-        return {'original_image':image_base64}
+        def encodeBase64Image(image: PIL.Image, name: str) -> str:
+            # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string
+            buffered = BytesIO()
+            image.save(buffered, format="JPEG")
+            img_str = base64.b64encode(buffered.getvalue())
+        img_str = encodeBase64Image(image: PIL.Image, name: str)
+        return {'original_image':img_str}
         
