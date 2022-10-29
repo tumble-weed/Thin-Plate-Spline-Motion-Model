@@ -1,4 +1,4 @@
-from Image import PIL
+from PIL import Image
 import base64 
 from io import BytesIO
 import demo
@@ -14,19 +14,22 @@ from skimage.transform import resize
 config_path = 'config/vox-256.yaml'
 checkpoint_path = 'checkpoints/vox.pth.tar'
 device = 'cuda'
-
+DEBUG_PROD = False
 ######################################################
 TODO = False
-def decodeBase64Image(imageStr: str, name: str) -> PIL.Image:
-    image = PIL.Image.open(BytesIO(base64.decodebytes(bytes(imageStr, "utf-8"))))
+def decodeBase64Image(imageStr: str, name: str) -> Image:
+    image = Image.open(BytesIO(base64.decodebytes(bytes(imageStr, "utf-8"))))
     print(f'Decoded image "{name}": {image.format} {image.width}x{image.height}')
     return image
-def encodeBase64Image(image: PIL.Image, name: str) -> str:
+def encodeBase64Image(image: Image) -> str:
     # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string
     buffered = BytesIO()
     image.save(buffered, format="JPEG")
-    img_str = base64.b64encode(buffered.getvalue())
+    img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    return img_str
 def init():
+    if not DEBUG_PROD:
+        return
     '''
     creates the globals that will be used every call
     '''
@@ -49,8 +52,8 @@ def inference(all_inputs:dict) -> dict:
     global model
     assert 'image' in all_inputs, 'TODO: what to do if image is not there?'
     image = all_inputs.get("image", None)
-    image = decodeBase64Image(image)
-    if True and 'prod':
+    image = decodeBase64Image(image,'image')
+    if False and 'prod':
         global inpainting, kp_detector, dense_motion_network, avd_network
         with torch.inference_mode():
             video_base64 = wrapper_for_animate(image,
