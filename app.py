@@ -11,7 +11,7 @@ from skimage import img_as_ubyte
 from skimage.transform import resize
 ######################################################
 # all settings, exposed here for visibility
-config_path = 'config/vox-256.yaml'
+config_path = 'config/custom-256.yaml'
 checkpoint_path = 'checkpoints/vox.pth.tar'
 device = 'cuda'
 driving_video='./assets/driving.mp4'
@@ -40,11 +40,7 @@ def init():
     '''
     # CUDA_VISIBLE_DEVICES=0 python demo.py --config config/vox-256.yaml --checkpoint checkpoints/vox.pth.tar --source_image ./source.jpg --driving_video ./driving.mp4
     global model 
-    '''
-    config_path = 'config/vox-256.yaml'
-    checkpoint_path = 'checkpoints/vox.pth.tar'
-    device = 'cuda'
-    '''
+
     # model = TODO
     global inpainting, kp_detector, dense_motion_network, avd_network
     inpainting, kp_detector, dense_motion_network, avd_network = demo.load_checkpoints(config_path = config_path, checkpoint_path = checkpoint_path, device = device)
