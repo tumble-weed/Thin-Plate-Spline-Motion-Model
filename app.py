@@ -74,15 +74,15 @@ def inference(all_inputs:dict) -> dict:
 #######################################################################
 
 def wrapper_for_animate(source_image,
-                        driving_video='./assets/driving.mp4',
-                        device='cuda',
-                        img_shape = (256,256),
-                        inpainting = TODO, 
-                        kp_detector  = TODO, 
-                        dense_motion_network  = TODO, 
-                        avd_network = TODO,
-                        find_best_frame = False,
-                        mode = ['standard', 'relative', 'avd'][1],
+                        driving_video,
+                        device,
+                        img_shape,
+                        inpainting, 
+                        kp_detector, 
+                        dense_motion_network, 
+                        avd_network,
+                        find_best_frame,
+                        mode,
                         # result_video='./result.mp4',
                         ):
     # source_image = imageio.imread(opt.source_image)
