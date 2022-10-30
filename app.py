@@ -9,11 +9,13 @@ from skimage.transform import resize
 import torch
 from skimage import img_as_ubyte
 from skimage.transform import resize
+import os
+import numpy as np
 ######################################################
 # all settings, exposed here for visibility
 
 config_path = 'config/custom-256.yaml'
-checkpoint_path = 'checkpoints/vox.pth.tar'
+checkpoint_path = 'checkpoints/custom.pth.tar'
 device = 'cuda'
 driving_video='./assets/driving.mp4'
 img_shape = (256,256)
@@ -53,6 +55,7 @@ def inference(all_inputs:dict) -> dict:
     image = all_inputs.get("image", None)
     image = decodeBase64Image(image,'image')
 
+    image = np.array(image)
     global inpainting, kp_detector, dense_motion_network, avd_network
     with torch.inference_mode():
         #TODO: tempfilename for result video?
@@ -118,10 +121,11 @@ def wrapper_for_animate(source_image,
     # with tempfile.TemporaryFile(mode='w+b') as f:
     import tempfile
     temp_name = next(tempfile._get_candidate_names())
-    temp_name = temp_name + +'.mp4'
+    temp_name = temp_name +'.mp4'
     imageio.mimsave(temp_name, [img_as_ubyte(frame) for frame in predictions], fps=fps)    
     # imageio.mimread(temp_name)
     # https://stackoverflow.com/questions/56248567/how-do-i-decode-encode-a-video-to-a-text-file-and-then-back-to-video
     with open(temp_name, "rb") as videoFile:
-        video_base64 =  base64.b64encode(videoFile.read())
+        video_base64 =  base64.b64encode(videoFile.read()).decode('utf-8')
+    os.system(f'rm {temp_name}')
     return video_base64
