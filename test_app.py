@@ -19,10 +19,18 @@ image = Image.fromarray(image)
 image_base64 = encodeBase64Image(image)
 # request.json({'image':image_base64})
 
-if 'bounce back experiment' and True:
+if 'bounce back experiment' and False:
     app.init()
     response = app.inference({'image':image_base64})
     image = decodeBase64Image(response['original_image'], 'bounce-back-experiment')
     image = np.array(image)
     skimage.io.imsave('bounce_back_image.png',image)
     
+if 'run dl code' and True:
+    app.init()
+    response = app.inference({'image':image_base64})
+    video_base64 = decodeBase64Image(response['result'], 'bounce-back-experiment')
+    with open('result.mp4','wb') as f:
+        f.write(base64.b64decode(video_base64))
+    # image = np.array(image)
+    # skimage.io.imsave('bounce_back_image.png',image)

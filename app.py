@@ -14,6 +14,11 @@ from skimage.transform import resize
 config_path = 'config/vox-256.yaml'
 checkpoint_path = 'checkpoints/vox.pth.tar'
 device = 'cuda'
+driving_video='./assets/driving.mp4'
+img_shape = (256,256)
+find_best_frame = False
+# choose from ['standard', 'relative', 'avd']
+mode = 'standard'
 DEBUG_PROD = True
 ######################################################
 TODO = False
@@ -53,19 +58,20 @@ def inference(all_inputs:dict) -> dict:
     assert 'image' in all_inputs, 'TODO: what to do if image is not there?'
     image = all_inputs.get("image", None)
     image = decodeBase64Image(image,'image')
-    if False and 'prod':
+    if DEBUG_PROD:
         global inpainting, kp_detector, dense_motion_network, avd_network
         with torch.inference_mode():
+            #TODO: tempfilename for result video?
             video_base64 = wrapper_for_animate(image,
-                            driving_video='./assets/driving.mp4',
+                            driving_video=driving_video,
                             device='cuda',
-                            img_shape = (256,256),
+                            img_shape = img_shape,
                             inpainting = inpainting, 
                             kp_detector  = kp_detector, 
                             dense_motion_network  = dense_motion_network, 
                             avd_network = avd_network,
-                            find_best_frame = False,
-                            mode = ['standard', 'relative', 'avd'][1],
+                            find_best_frame = find_best_frame,
+                            mode = mode,
                             result_video='./result.mp4',
                             )
         #TODO: or storage to google bucket and send back the link?
