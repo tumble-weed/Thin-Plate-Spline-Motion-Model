@@ -11,6 +11,7 @@ from skimage import img_as_ubyte
 from skimage.transform import resize
 ######################################################
 # all settings, exposed here for visibility
+
 config_path = 'config/custom-256.yaml'
 checkpoint_path = 'checkpoints/vox.pth.tar'
 device = 'cuda'
