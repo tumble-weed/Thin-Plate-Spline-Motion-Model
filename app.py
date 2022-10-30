@@ -19,7 +19,6 @@ img_shape = (256,256)
 find_best_frame = False
 # choose from ['standard', 'relative', 'avd']
 mode = 'standard'
-DEBUG_PROD = True
 ######################################################
 TODO = False
 def decodeBase64Image(imageStr: str, name: str) -> Image:
@@ -33,8 +32,6 @@ def encodeBase64Image(image: Image) -> str:
     img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
     return img_str
 def init():
-    if not DEBUG_PROD:
-        return
     '''
     creates the globals that will be used every call
     '''
@@ -54,28 +51,24 @@ def inference(all_inputs:dict) -> dict:
     assert 'image' in all_inputs, 'TODO: what to do if image is not there?'
     image = all_inputs.get("image", None)
     image = decodeBase64Image(image,'image')
-    if DEBUG_PROD:
-        global inpainting, kp_detector, dense_motion_network, avd_network
-        with torch.inference_mode():
-            #TODO: tempfilename for result video?
-            video_base64 = wrapper_for_animate(image,
-                            driving_video=driving_video,
-                            device='cuda',
-                            img_shape = img_shape,
-                            inpainting = inpainting, 
-                            kp_detector  = kp_detector, 
-                            dense_motion_network  = dense_motion_network, 
-                            avd_network = avd_network,
-                            find_best_frame = find_best_frame,
-                            mode = mode,
-                            result_video='./result.mp4',
-                            )
-        #TODO: or storage to google bucket and send back the link?
-        return {'result':video_base64}
-    elif True and 'DEBUG: send back the original image':
 
-        img_str = encodeBase64Image(image)
-        return {'original_image':img_str}
+    global inpainting, kp_detector, dense_motion_network, avd_network
+    with torch.inference_mode():
+        #TODO: tempfilename for result video?
+        video_base64 = wrapper_for_animate(image,
+                        driving_video=driving_video,
+                        device='cuda',
+                        img_shape = img_shape,
+                        inpainting = inpainting, 
+                        kp_detector  = kp_detector, 
+                        dense_motion_network  = dense_motion_network, 
+                        avd_network = avd_network,
+                        find_best_frame = find_best_frame,
+                        mode = mode,
+                        # result_video='./result.mp4',
+                        )
+    #TODO: or storage to google bucket and send back the link?
+    return {'result':video_base64}
 #######################################################################
 # wrapper for animate
 #######################################################################
@@ -90,7 +83,7 @@ def wrapper_for_animate(source_image,
                         avd_network = TODO,
                         find_best_frame = False,
                         mode = ['standard', 'relative', 'avd'][1],
-                        result_video='./result.mp4',
+                        # result_video='./result.mp4',
                         ):
     # source_image = imageio.imread(opt.source_image)
     reader = imageio.get_reader(driving_video)
@@ -120,17 +113,14 @@ def wrapper_for_animate(source_image,
         predictions = predictions_backward[::-1] + predictions_forward[1:]
     else:
         predictions = demo.make_animation(source_image, driving_video, inpainting, kp_detector, dense_motion_network, avd_network, device = device, mode = mode)
-    if False:
-        #TODO: dont save the video, return the video
-        imageio.mimsave(result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)    
-    else:
-        # with tempfile.TemporaryFile(mode='w+b') as f:
-        import tempfile
-        temp_name = next(tempfile._get_candidate_names())
-        temp_name = temp_name + +'.mp4'
-        imageio.mimsave(temp_name, [img_as_ubyte(frame) for frame in predictions], fps=fps)    
-        # imageio.mimread(temp_name)
-        # https://stackoverflow.com/questions/56248567/how-do-i-decode-encode-a-video-to-a-text-file-and-then-back-to-video
-        with open(temp_name, "rb") as videoFile:
-            video_base64 =  base64.b64encode(videoFile.read())
-        return video_base64
+
+    # with tempfile.TemporaryFile(mode='w+b') as f:
+    import tempfile
+    temp_name = next(tempfile._get_candidate_names())
+    temp_name = temp_name + +'.mp4'
+    imageio.mimsave(temp_name, [img_as_ubyte(frame) for frame in predictions], fps=fps)    
+    # imageio.mimread(temp_name)
+    # https://stackoverflow.com/questions/56248567/how-do-i-decode-encode-a-video-to-a-text-file-and-then-back-to-video
+    with open(temp_name, "rb") as videoFile:
+        video_base64 =  base64.b64encode(videoFile.read())
+    return video_base64
