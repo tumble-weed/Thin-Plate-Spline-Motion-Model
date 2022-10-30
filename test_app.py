@@ -29,7 +29,7 @@ if 'bounce back experiment' and False:
 if 'run dl code' and True:
     app.init()
     response = app.inference({'image':image_base64})
-    video_base64 = decodeBase64Image(response['result'], 'bounce-back-experiment')
+    video_base64 = response['result']
     with open('result.mp4','wb') as f:
         f.write(base64.b64decode(video_base64))
     # image = np.array(image)
